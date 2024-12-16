@@ -100,11 +100,11 @@ jobs:
       - name: Zip Function App
         run: |
           outputPath="./output/$functionAppProjectName"
-          zipPath="./output/$functionAppProjectName.zip"
-          echo "Zipping contents of: $outputPath to $zipPath"
-          cd "$outputPath"  # Change to the published output directory
-          zip -r "$zipPath" .  # Zip the contents directly (no folder nesting)
-          
+          zipPath="$outputPath.zip"
+          echo "Zipping project: $outputPath to $zipPath"
+          ls -la "$outputPath"  
+          zip -r "$zipPath" "$outputPath"
+
       - name: Deploy Function App
         run: |
           resourceGroupName="rg-$applicationName-$componentName-$environment-$postfixCount"
