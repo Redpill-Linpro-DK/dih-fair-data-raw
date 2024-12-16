@@ -70,7 +70,7 @@ jobs:
       - name: Restore NuGet Packages
         run: |
           echo "Restoring NuGet packages..."
-          dotnet restore **/*.sln
+          dotnet restore *.sln
 
       - name: Build Function App
         run: |
