@@ -71,6 +71,7 @@ jobs:
       - name: Authenticate with GitHub NuGet Feed
         run: |
           echo "Authenticating with GitHub NuGet Feed..."
+          dotnet nuget remove source DIH-GitHub-Feed
           dotnet nuget add source $nugetFeed \
             --name DIH-GitHub-Feed \
             --username $secrets_DIH_FAIR_PACKAGES_PAT_user \
