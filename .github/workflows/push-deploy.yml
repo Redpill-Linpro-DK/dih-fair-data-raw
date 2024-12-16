@@ -12,6 +12,8 @@ jobs:
   deploy-infrastructure:
     name: Deploy Infrastructure
     runs-on: ubuntu-latest
+    env:
+      componentName: 'r' 
     steps:
       - name: Checkout current repository
         uses: actions/checkout@v3
