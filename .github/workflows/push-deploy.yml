@@ -100,10 +100,13 @@ jobs:
       - name: Zip Function App
         run: |
           outputPath="./output/$functionAppProjectName"
-          zipPath="$outputPath.zip"
+          zipPath="../../$outputPath.zip"
           echo "Zipping project: $outputPath to $zipPath"
           ls -la "$outputPath"  
+          cd "$outputPath"
+          ls
           zip -r "$zipPath" "$outputPath"
+          cd ../..
 
       - name: Deploy Function App
         run: |
