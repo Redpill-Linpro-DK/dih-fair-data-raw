@@ -61,10 +61,10 @@ jobs:
               uniqueDeployId=$uniqueDeployId \
               postfixCount=$postfixCount \
               location=$resourceLocation \
-              tags="$(echo $tags | jq -r 'to_entries | map("\(.key)=\(.value)") | .[]')" \
-              useLocalKeyVault=$useLocalKeyVault \
-              useGlobalKeyVault=$useGlobalKeyVault \
-              allowVnetUsage=$allowVnetUsage
+              tags="$tags" \
+              useLocalKeyVault=false \
+              useGlobalKeyVault=false \
+              allowVnetUsage=false
 
       - name: Restore NuGet Packages
         run: |
