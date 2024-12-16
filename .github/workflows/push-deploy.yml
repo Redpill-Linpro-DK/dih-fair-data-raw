@@ -108,12 +108,6 @@ jobs:
           zip -r "$zipPath" "."
           cd ..
 
-      - name: Upload ZIP as Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: FunctionApp-ZIP
-          path: ./$functionAppProjectName.zip
-
       - name: Deploy Function App
         run: |
           resourceGroupName="rg-$applicationName-$componentName-$environment-$postfixCount"
