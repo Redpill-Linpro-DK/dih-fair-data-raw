@@ -100,7 +100,7 @@ jobs:
       - name: Zip Function App
         run: |
           outputPath="./output/$functionAppProjectName"
-          zipPath="../../$outputPath.zip"
+          zipPath="../../$functionAppProjectName.zip"
           echo "Zipping project: $outputPath to $zipPath"
           ls -la "$outputPath"  
           cd "$outputPath"
@@ -112,7 +112,7 @@ jobs:
         run: |
           resourceGroupName="rg-$applicationName-$componentName-$environment-$postfixCount"
           functionAppName="func-$applicationName-$componentName-$environment-$uniqueDeployId-$postfixCount"
-          packagePath="./output/$functionAppProjectName.zip"
+          packagePath="./$functionAppProjectName.zip"
 
           echo "Deploying Function App $packagePath to $functionAppName in $resourceGroupName"
           if [ -f "$packagePath" ]; then
