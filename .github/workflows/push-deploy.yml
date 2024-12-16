@@ -12,7 +12,6 @@ jobs:
   deploy-infrastructure:
     name: Deploy Infrastructure
     runs-on: ubuntu-latest
-    if: ${{ github.event.inputs.DeployInfrastructure == 'true' }}
     steps:
       - name: Checkout current repository
         uses: actions/checkout@v3
