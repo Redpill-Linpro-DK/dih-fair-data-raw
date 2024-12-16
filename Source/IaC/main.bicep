@@ -27,6 +27,7 @@ module functionAppModule '../../common-repo/Source/IaC/shared_modules/dih-functi
     useGlobalKeyVault: useGlobalKeyVault
     allowVnetUsage: allowVnetUsage
     internalNetworkName: internalNetworkName
+    functionsWorkerRuntime: 'dotnet'
   }
 }
 
