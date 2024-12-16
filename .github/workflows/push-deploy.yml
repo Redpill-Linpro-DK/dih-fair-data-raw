@@ -53,7 +53,7 @@ jobs:
           echo "Deploying resources with Bicep..."
           az deployment group create \
             --resource-group $resourceGroupName \
-            --template-file ./common-repo/source/IaC/main.bicep \
+            --template-file ./Source/IaC/main.bicep \
             --parameters \
               applicationName=$applicationName \
               componentName=$componentName \
