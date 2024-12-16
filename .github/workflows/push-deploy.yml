@@ -100,13 +100,19 @@ jobs:
       - name: Zip Function App
         run: |
           outputPath="./output/$functionAppProjectName"
-          zipPath="../$functionAppProjectName.zip"
+          zipPath="../..//$functionAppProjectName.zip"
           echo "Zipping project: $outputPath to $zipPath"
           ls -la "$outputPath"  
-          cd "output"
+          cd $outputPath
           ls
           zip -r "$zipPath" "."
-          cd ../..
+          cd ..
+
+      - name: Upload ZIP as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: FunctionApp-ZIP
+          path: ./$functionAppProjectName.zip
 
       - name: Deploy Function App
         run: |
