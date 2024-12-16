@@ -42,31 +42,31 @@ jobs:
         with:
           creds: ${{ secrets.DIH_FAIR_AZURE_CREDENTIALS_DEV }}
 
-      # - name: Deploy Infrastructure
-      #   run: |
-      #     resourceGroupName="rg-$applicationName-$componentName-$environment-$postfixCount"
-      #     echo "Creating resource group: $resourceGroupName"
-      #     az group create \
-      #       --name $resourceGroupName \
-      #       --location $resourceLocation \
-      #       --tags "$(echo $tags | jq -r 'to_entries | map("\(.key)=\(.value)") | .[]')"
+      - name: Deploy Infrastructure
+        run: |
+          resourceGroupName="rg-$applicationName-$componentName-$environment-$postfixCount"
+          echo "Creating resource group: $resourceGroupName"
+          az group create \
+            --name $resourceGroupName \
+            --location $resourceLocation \
+            --tags "$(echo $tags | jq -r 'to_entries | map("\(.key)=\(.value)") | .[]')"
 
-      #     echo "Deploying resources with Bicep..."
-      #     az deployment group create \
-      #       --resource-group $resourceGroupName \
-      #       --template-file ./Source/IaC/main.bicep \
-      #       --parameters \
-      #         applicationName=$applicationName \
-      #         componentName=$componentName \
-      #         env=$environment \
-      #         uniqueDeployId=$uniqueDeployId \
-      #         postfixCount=$postfixCount \
-      #         location=$resourceLocation \
-      #         tags="$tags" \
-      #         developerAccessAadGroupId=$developerAccessAadGroupId \
-      #         useLocalKeyVault=false \
-      #         useGlobalKeyVault=false \
-      #         allowVnetUsage=false
+          echo "Deploying resources with Bicep..."
+          az deployment group create \
+            --resource-group $resourceGroupName \
+            --template-file ./Source/IaC/main.bicep \
+            --parameters \
+              applicationName=$applicationName \
+              componentName=$componentName \
+              env=$environment \
+              uniqueDeployId=$uniqueDeployId \
+              postfixCount=$postfixCount \
+              location=$resourceLocation \
+              tags="$tags" \
+              developerAccessAadGroupId=$developerAccessAadGroupId \
+              useLocalKeyVault=false \
+              useGlobalKeyVault=false \
+              allowVnetUsage=false
 
       - name: Authenticate with GitHub NuGet Feed
         run: |
@@ -102,11 +102,9 @@ jobs:
           outputPath="./output/$functionAppProjectName"
           zipPath="../..//$functionAppProjectName.zip"
           echo "Zipping project: $outputPath to $zipPath"
-          ls -la "$outputPath"  
           cd $outputPath
           ls
           zip -r "$zipPath" "."
-          cd ..
 
       - name: Deploy Function App
         run: |
@@ -115,12 +113,7 @@ jobs:
           packagePath="./$functionAppProjectName.zip"
 
           echo "Deploying Function App $packagePath to $functionAppName in $resourceGroupName"
-          if [ -f "$packagePath" ]; then
-            echo "Package found: $packagePath"
-          else
-            echo "Error: Package not found at $packagePath"
-            exit 1
-          fi
+
           az functionapp deployment source config-zip \
             --resource-group $resourceGroupName \
             --name $functionAppName \
