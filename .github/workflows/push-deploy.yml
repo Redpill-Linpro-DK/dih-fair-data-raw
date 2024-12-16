@@ -62,6 +62,7 @@ jobs:
               postfixCount=$postfixCount \
               location=$resourceLocation \
               tags="$tags" \
+              developerAccessAadGroupId=$developerAccessAadGroupId \
               useLocalKeyVault=false \
               useGlobalKeyVault=false \
               allowVnetUsage=false
