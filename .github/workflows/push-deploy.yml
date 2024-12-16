@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       componentName: 'r' 
+      functionAppProjectName: 'DIH.Data.Raw.Functions' # Declare the Function App project
     steps:
       - name: Checkout current repository
         uses: actions/checkout@v3
@@ -66,6 +67,16 @@ jobs:
               useLocalKeyVault=false \
               useGlobalKeyVault=false \
               allowVnetUsage=false
+
+      - name: Authenticate with GitHub NuGet Feed
+        run: |
+          echo "Authenticating with GitHub NuGet Feed..."
+          dotnet nuget add source $nugetFeed \
+            --name DIH-GitHub-Feed \
+            --username $secrets_DIH_FAIR_PACKAGES_PAT_user \
+            --password ${{ secrets.DIH_FAIR_PACKAGES_PAT }} \
+            --store-password-in-clear-text
+          dotnet nuget list source
 
       - name: Restore NuGet Packages
         run: |
