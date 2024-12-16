@@ -1,4 +1,4 @@
-name: Sub-Repo Workflow
+name: 'DIH.Data.Raw'
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
 
 jobs:
   deploy-infrastructure:
-    name: Deploy Infrastructure
+    name: Deploy Infrastructure, Build and Deploy Code
     runs-on: ubuntu-latest
     env:
       componentName: 'r' 
@@ -110,7 +110,13 @@ jobs:
           functionAppName="func-$applicationName-$componentName-$environment-$uniqueDeployId-$postfixCount"
           packagePath="./output/$functionAppProjectName.zip"
 
-          echo "Deploying Function App: $functionAppName"
+          echo "Deploying Function App $packagePath to $functionAppName in $resourceGroupName"
+          if [ -f "$packagePath" ]; then
+            echo "Package found: $packagePath"
+          else
+            echo "Error: Package not found at $packagePath"
+            exit 1
+          fi
           az functionapp deployment source config-zip \
             --resource-group $resourceGroupName \
             --name $functionAppName \
