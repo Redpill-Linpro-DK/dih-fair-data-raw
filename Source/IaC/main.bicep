@@ -11,7 +11,7 @@ param useGlobalKeyVault bool
 param internalNetworkName string = ''
 param allowVnetUsage bool
 
-module functionAppModule '../../../DIH.DihBaseline.Common/Source/IaC/shared_modules/dih-functionapp.bicep' = {
+module functionAppModule '../../common-repo/Source/IaC/shared_modules/dih-functionapp.bicep' = {
   name: 'functionApp'
   params: {
     applicationName: applicationName
