@@ -1,0 +1,38 @@
+{
+    "version": "2.0",
+    "functionTimeout": "00:10:00",
+    "logging": {
+        "LogLevel": {
+            "DIH": "Information",
+            "Microsoft.Azure": "Warning",
+            "Microsoftx": "Warning",
+            "Azure": "Warning",
+            "Azure.Identity": "None",
+            "Default": "Warning",
+            "Azure.Core": "Error"
+        },
+        "applicationInsights": {
+            "samplingSettings": {
+                "isEnabled": false,
+                "excludedTypes": "Request"
+            },
+            "enableLiveMetricsFilters": true
+        }
+    },
+    "extensions": {
+        "serviceBus": {
+            "clientRetryOptions": {
+                "mode": "Exponential",
+                "tryTimeout": "00:09:30",
+                "delay": "00:00:10.00",
+                "maxRetries": 6
+            },
+            "prefetchCount": 0,
+            "transportType": "amqpWebSockets",
+            "maxAutoLockRenewalDuration": "00:09:30",
+            "maxConcurrentCalls": 6,
+            "sessionIdleTimeout": "00:01:00"
+        }
+    }
+}
+

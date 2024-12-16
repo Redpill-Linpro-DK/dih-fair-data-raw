@@ -1,0 +1,120 @@
+name: 'DIH.Data.Raw'
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - hotfix/*
+      - "**" # Catch-all for other branches
+
+jobs:
+  deploy-infrastructure:
+    name: Deploy Infrastructure, Build and Deploy Code
+    runs-on: ubuntu-latest
+    env:
+      componentName: 'r' 
+      functionAppProjectName: 'DIH.Data.Raw.Functions' # Declare the Function App project
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v3
+
+      - name: Checkout common repository
+        uses: actions/checkout@v3
+        with:
+          repository: Redpill-Linpro-DK/dih-fair-common
+          token: ${{ secrets.DIH_FAIR_COMMON_REPO_PAT }}
+          path: common-repo
+
+      - name: Load env
+        uses: ./common-repo/.github/actions/loadEnvVariables
+        with:
+          rootDir: common-repo
+
+      - name: Log in to Azure (prod)
+        if: env.environment == 'prod'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.DIH_FAIR_AZURE_CREDENTIALS_PROD }}
+      - name: Log in to Azure (dev)
+        if: env.environment == 'dev'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.DIH_FAIR_AZURE_CREDENTIALS_DEV }}
+
+      - name: Deploy Infrastructure
+        run: |
+          resourceGroupName="rg-$applicationName-$componentName-$environment-$postfixCount"
+          echo "Creating resource group: $resourceGroupName"
+          az group create \
+            --name $resourceGroupName \
+            --location $resourceLocation \
+            --tags "$(echo $tags | jq -r 'to_entries | map("\(.key)=\(.value)") | .[]')"
+
+          echo "Deploying resources with Bicep..."
+          az deployment group create \
+            --resource-group $resourceGroupName \
+            --template-file ./Source/IaC/main.bicep \
+            --parameters \
+              applicationName=$applicationName \
+              componentName=$componentName \
+              env=$environment \
+              uniqueDeployId=$uniqueDeployId \
+              postfixCount=$postfixCount \
+              location=$resourceLocation \
+              tags="$tags" \
+              developerAccessAadGroupId=$developerAccessAadGroupId \
+              useLocalKeyVault=false \
+              useGlobalKeyVault=false \
+              allowVnetUsage=false
+
+      - name: Authenticate with GitHub NuGet Feed
+        run: |
+          echo "Authenticating with GitHub NuGet Feed..."
+          dotnet nuget remove source DIH-GitHub-Feed
+          dotnet nuget add source $nugetFeed \
+            --name DIH-GitHub-Feed \
+            --username $secrets_DIH_FAIR_PACKAGES_PAT_user \
+            --password ${{ secrets.DIH_FAIR_PACKAGES_PAT }} \
+            --store-password-in-clear-text
+          dotnet nuget list source
+
+      - name: Restore NuGet Packages
+        run: |
+          echo "Restoring NuGet packages..."
+          dotnet restore *.sln
+
+      - name: Build Function App
+        run: |
+          projectPath="./Source/$functionAppProjectName"
+          echo "Building project: $projectPath"
+          dotnet build "$projectPath/$functionAppProjectName.csproj" --configuration $buildConfiguration
+
+      - name: Publish Function App
+        run: |
+          outputPath="./output/$functionAppProjectName"
+          projectPath="./Source/$functionAppProjectName"
+          echo "Publishing project: $projectPath"
+          dotnet publish "$projectPath/$functionAppProjectName.csproj" --configuration $buildConfiguration --output "$outputPath"
+
+      - name: Zip Function App
+        run: |
+          outputPath="./output/$functionAppProjectName"
+          zipPath="../..//$functionAppProjectName.zip"
+          echo "Zipping project: $outputPath to $zipPath"
+          cd $outputPath
+          ls
+          zip -r "$zipPath" "."
+
+      - name: Deploy Function App
+        run: |
+          resourceGroupName="rg-$applicationName-$componentName-$environment-$postfixCount"
+          functionAppName="func-$applicationName-$componentName-$environment-$uniqueDeployId-$postfixCount"
+          packagePath="./$functionAppProjectName.zip"
+
+          echo "Deploying Function App $packagePath to $functionAppName in $resourceGroupName"
+
+          az functionapp deployment source config-zip \
+            --resource-group $resourceGroupName \
+            --name $functionAppName \
+            --src $packagePath

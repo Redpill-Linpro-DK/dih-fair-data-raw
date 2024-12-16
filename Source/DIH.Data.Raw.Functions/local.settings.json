@@ -1,0 +1,10 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "FUNCTIONS_EXTENSION_VERSION": "~4",
+    "AzureAppConfigurationEndpoint": "https://config-dihbaseline-dev-d3vs-01.azconfig.io",
+    "FUNCTIONS_INPROC_NET8_ENABLED": "1"
+  }
+}
